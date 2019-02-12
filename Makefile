@@ -81,7 +81,7 @@ test_environment:
 # 	* print line
 # Separate expressions are necessary because labels cannot be delimited by
 # semicolon; see <http://stackoverflow.com/a/11799865/1968>
-.PHONY: help
+
 help:
 	@echo "$$(tput bold)Available rules:$$(tput sgr0)"
 	@echo
