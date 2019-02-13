@@ -20,10 +20,13 @@ def main():
     logger = logging.getLogger(__name__)
     logger.info('making final datasets from raw data')
 
-    format(raw_path, interim_path)
+    format(raw_path, interim_path) # Group all data to json datasets
+    preprocess(interim_path, processed_path)
+
 
 def preprocess(input_path, output_path):
     pass
+
 
 def format(input_path, output_path):
 
@@ -31,19 +34,15 @@ def format(input_path, output_path):
 
     for zipfile in zipfiles:
         dataset = []
-
         with ZipFile(input_path / zipfile) as zip:
             txtfiles = (
                 name
                 for name in zip.namelist()
                 if '.txt' in name and 'MACOSX' not in name # Ignore 'MACOSX' directory
             )
-
             for txtfile in txtfiles:
                 text = zip.read(txtfile).decode('utf-8')
-
                 datapoint = { 'text': text }
-                
                 # Add sentiment label if known
                 if 'train' in txtfile:
                     datapoint['sentiment'] = POSITIVE if 'pos' in txtfile else NEGATIVE
@@ -52,6 +51,7 @@ def format(input_path, output_path):
 
         with open(output_path / (zipfile.split('.')[0] + '.json'), 'w') as fout:
             json.dump(dataset, fout)
+
 
 if __name__ == '__main__':
     main()
