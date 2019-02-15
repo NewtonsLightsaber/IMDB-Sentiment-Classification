@@ -10,7 +10,7 @@ def main ():
     sentiment = []
     
     #Training data cleaning
-    with open("IMDB-Sentiment-Classification/data/interim/test.json") as fp:
+    with open("IMDB-Sentiment-Classification/data/interim/train.json") as fp:
         data = json.load(fp)
         
     i = 0
@@ -25,7 +25,7 @@ def main ():
         i += 1
       
     #Test data cleaning
-    with open("IMDB-Sentiment-Classification/data/interim/train.json") as fp:
+    with open("IMDB-Sentiment-Classification/data/interim/test.json") as fp:
         data = json.load(fp)
         
     i = 0
