@@ -3,14 +3,13 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.preprocessing import Normalizer
     
-def main ():
+def featureProcessing ():
     #Training and test lists
     X_train = []
     X_test = []
     sentiment = []
-    
     #Training data cleaning
-    with open("IMDB-Sentiment-Classification/data/interim/train.json") as fp:
+    with open("train.json") as fp:
         data = json.load(fp)
         
     i = 0
@@ -25,7 +24,7 @@ def main ():
         i += 1
       
     #Test data cleaning
-    with open("IMDB-Sentiment-Classification/data/interim/test.json") as fp:
+    with open("test.json") as fp:
         data = json.load(fp)
         
     i = 0
@@ -55,3 +54,5 @@ def main ():
     normalizer_tranformer = Normalizer().fit(X=X_train_tfidf)
     X_train_normalized = normalizer_tranformer.transform(X_train_tfidf)
     X_test_normalized = normalizer_tranformer.transform(X_test_tfidf)
+    
+    return (X_train_normalized, X_test_normalized, sentiment)
