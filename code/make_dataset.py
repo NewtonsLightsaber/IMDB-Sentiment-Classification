@@ -27,7 +27,6 @@ def preprocess(input_path, output_path):
     pass
 
 def format(input_path, output_path):
-
     zipfiles = [ 'train.zip', 'test.zip' ]
 
     for zipfile in zipfiles:
@@ -41,7 +40,8 @@ def format(input_path, output_path):
             for txtfile in txtfiles:
                 text = zip.read(txtfile).decode('utf-8')
                 datapoint = { 'text': text }
-                # Add sentiment label if known
+
+                # Add sentiment label if known i.e. in training datast
                 if 'train' in txtfile:
                     datapoint['sentiment'] = POSITIVE if 'pos' in txtfile else NEGATIVE
 

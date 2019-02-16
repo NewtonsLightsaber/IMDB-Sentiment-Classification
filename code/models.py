@@ -2,11 +2,24 @@
 import numpy as np
 from make_dataset import NEGATIVE, POSITIVE
 
-class BernoulliNaiveBayes:
+class Classifier:
+    def acc(self, X, y):
+        """
+        Compute accuracy of prediction
+        """
+        pass
+
+class BernoulliNaiveBayes(Classifier):
     """
     Bernoulli Naive Bayes classifier with 2 classes.
     """
-    def train(self, X, y):
+    def __init__(self, k=1):
+        """
+        Set k value for Laplacian Smoothing
+        """
+        self.k = k
+
+    def fit(self, X, y):
         """
         Define
             theta_1 = (# of examples where y=1) / (total # of examples)
@@ -24,13 +37,13 @@ class BernoulliNaiveBayes:
 
         self.theta_1 = num_y_1 / n
         self.theta_x_0 = [
-            (len([None for i in range(n) if X[i][j] == 1 and y[i] == 0]) + 1) \
-            / (num_y_0 + 2)
+            (len([None for i in range(n) if X[i][j] == 1 and y[i] == NEGATIVE]) + k) \
+            / (num_y_0 + k + 1)
             for j in range(m)
         ]
         self.theta_x_1 = [
-            (len([None for i in range(n) if X[i][j] == y[i] == 1]) + 1) \
-            / (num_y_1 + 2)
+            (len([None for i in range(n) if X[i][j] == y[i] == POSITIVE]) + k) \
+            / (num_y_1 + k + 1)
             for j in range(m)
         ]
 
