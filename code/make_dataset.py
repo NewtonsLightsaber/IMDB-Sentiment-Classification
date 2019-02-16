@@ -3,6 +3,8 @@ import logging
 import json
 from pathlib import Path
 from zipfile import ZipFile
+from bs4 import BeautifulSoup as bs
+import re
 
 project_dir = Path(__file__).resolve().parents[1]
 raw_path = project_dir / 'data' / 'raw'
@@ -52,3 +54,8 @@ def format(input_path, output_path):
 
 if __name__ == '__main__':
     main()
+
+# function to remove non-words
+def clear_noise(self, text):
+    clear_text = bs(text).get_text()
+    return re.sub("[^a-zA-Z]", " ", clear_text)
