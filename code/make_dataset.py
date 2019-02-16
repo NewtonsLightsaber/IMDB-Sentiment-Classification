@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from zipfile import ZipFile
 
-project_dir = Path(__file__).resolve().parents[2]
+project_dir = Path(__file__).resolve().parents[1]
 raw_path = project_dir / 'data' / 'raw'
 interim_path = project_dir / 'data' / 'interim'
 processed_path = project_dir / 'data' / 'processed'
@@ -20,7 +20,8 @@ def main():
     logger = logging.getLogger(__name__)
     logger.info('making final datasets from raw data')
 
-    format(raw_path, interim_path)
+    format(raw_path, interim_path) # Group all data to json datasets
+    preprocess(interim_path, processed_path)
 
 def preprocess(input_path, output_path):
     pass
@@ -31,19 +32,15 @@ def format(input_path, output_path):
 
     for zipfile in zipfiles:
         dataset = []
-
         with ZipFile(input_path / zipfile) as zip:
             txtfiles = (
                 name
                 for name in zip.namelist()
                 if '.txt' in name and 'MACOSX' not in name # Ignore 'MACOSX' directory
             )
-
             for txtfile in txtfiles:
                 text = zip.read(txtfile).decode('utf-8')
-
                 datapoint = { 'text': text }
-                
                 # Add sentiment label if known
                 if 'train' in txtfile:
                     datapoint['sentiment'] = POSITIVE if 'pos' in txtfile else NEGATIVE
