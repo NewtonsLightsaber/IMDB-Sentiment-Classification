@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import numpy as np
-from ...data.make_dataset import NEGATIVE, POSITIVE
+from make_dataset import NEGATIVE, POSITIVE
 
 class BernoulliNaiveBayes:
     """

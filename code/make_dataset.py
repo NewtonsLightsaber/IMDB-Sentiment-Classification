@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from zipfile import ZipFile
 
-project_dir = Path(__file__).resolve().parents[2]
+project_dir = Path(__file__).resolve().parents[1]
 raw_path = project_dir / 'data' / 'raw'
 interim_path = project_dir / 'data' / 'interim'
 processed_path = project_dir / 'data' / 'processed'
@@ -23,10 +23,8 @@ def main():
     format(raw_path, interim_path) # Group all data to json datasets
     preprocess(interim_path, processed_path)
 
-
 def preprocess(input_path, output_path):
     pass
-
 
 def format(input_path, output_path):
 
@@ -51,7 +49,6 @@ def format(input_path, output_path):
 
         with open(output_path / (zipfile.split('.')[0] + '.json'), 'w') as fout:
             json.dump(dataset, fout)
-
 
 if __name__ == '__main__':
     main()

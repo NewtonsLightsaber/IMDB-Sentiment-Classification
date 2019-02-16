@@ -24,19 +24,19 @@ requirements: test_environment
 
 ## Make Dataset
 data: requirements
-	$(PYTHON_INTERPRETER) code/data/make_dataset.py
+	$(PYTHON_INTERPRETER) code/make_dataset.py
 
 ## Make Features
 features: data
-	$(PYTHON_INTERPRETER) code/features/build_features.py
+	$(PYTHON_INTERPRETER) code/build_features.py
 
 ## Train and save models
 train: features
-	$(PYTHON_INTERPRETER) code/models/train_model.py
+	$(PYTHON_INTERPRETER) code/train.py
 
 ## Predict with all built models
 predict: train
-	$(PYTHON_INTERPRETER) code/models/predict_model.py
+	$(PYTHON_INTERPRETER) code/predict.py
 
 ## Set up python interpreter environment
 create_environment:
