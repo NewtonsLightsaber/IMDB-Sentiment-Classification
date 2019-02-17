@@ -28,7 +28,7 @@ data: requirements
 
 ## Make Features
 features: data
-	$(PYTHON_INTERPRETER) code/build_features.py
+	$(PYTHON_INTERPRETER) code/features.py
 
 ## Train and save models
 train: features

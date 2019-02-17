@@ -19,6 +19,9 @@ def main():
     #bnb.fit(X_train, y_train)
     print(type(newsgroups))
 
+def select_features(path, features):
+    pass
+
 def get_dataset(path):
     return json.load(open(path))
 
