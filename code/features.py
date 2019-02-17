@@ -2,20 +2,38 @@
 import logging
 import json
 from pathlib import Path
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.preprocessing import Normalizer
+from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from make_dataset import project_dir, interim_path
 
 processed_path = project_dir / 'data' / 'processed'
 
 def main():
-    build_features(interim_path, processed_path)
+    logger = logging.getLogger(__name__)
+    logger.info('Constructing features from data')
 
-def build_features(input_path, output_path):
-    data = json.load(open(input_path / 'train.json'))
-    texts = [ptn['text'] for ptn in data]
-    print(texts)
+    build_features()
+
+def build_features():
+    filenames = (
+        'X_train.json',
+        'X_test.json',
+        'y_train.json',
+    )
+    X_train, X_test, y_train = get_train_test_data(interim_path, filenames)
+
+    count_vect = CountVectorizer().fit(X_train)
+    X_train_counts = count_vect.transform(X_train)
+    X_test_counts = count_vect.transform(X_test)
+
+    print(count_vect)
+
+def get_train_test_data(input_path, filenames):
+    train_test_data = [
+        json.load(open(input_path / filename))
+        for filename in filenames
+    ]
+    return train_test_data
 
 def tfidf():
     #Training and test lists

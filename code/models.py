@@ -73,6 +73,9 @@ class BernoulliNaiveBayes(Classifier):
         predictions = np.array(predictions)
         return predictions
 
+
+""" Helper functions """
+
 def flatten(lst):
     """
     Flatten a list of lists
