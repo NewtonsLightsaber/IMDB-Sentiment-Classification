@@ -1,3 +1,5 @@
 numpy
 nltk
 sklearn
+jupyter
+jupyter_http_over_ws

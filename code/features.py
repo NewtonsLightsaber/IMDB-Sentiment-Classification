@@ -6,7 +6,7 @@ from sklearn.preprocessing import Normalizer
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from make_dataset import project_dir, interim_path
 
-processed_path = project_dir / 'data' / 'processed'
+processed_path = project_dir / 'data/processed'
 
 def main():
     logger = logging.getLogger(__name__)
