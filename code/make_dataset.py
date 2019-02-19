@@ -6,7 +6,7 @@ from zipfile import ZipFile
 
 project_dir = Path(__file__).resolve().parents[1]
 raw_path = project_dir / 'data/raw'
-interim_path = project_dir / 'data/interim'
+processed_path = project_dir / 'data/processed'
 
 NEGATIVE, POSITIVE = 0, 1
 
@@ -17,7 +17,7 @@ def main():
     """
     logger = logging.getLogger(__name__)
     logger.info('making final datasets from raw data')
-    preprocess(raw_path, interim_path) # Group all data into json datasets
+    preprocess(raw_path, processed_path) # Group all data into json datasets
 
 def preprocess(input_path, output_path):
     files = [ 'train.zip', 'test.zip' ]

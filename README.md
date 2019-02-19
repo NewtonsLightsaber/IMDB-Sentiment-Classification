@@ -4,7 +4,7 @@
 
 ## Prerequisites
 
-### Running Google Colab locally
+### Running Google Colab locally *(optional)*
 
 1. Install and enable the jupyter_http_over_ws jupyter extension (one-time)
     ```

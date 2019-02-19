@@ -26,12 +26,8 @@ requirements: test_environment
 data: requirements
 	$(PYTHON_INTERPRETER) code/make_dataset.py
 
-## Make Features
-features: data
-	$(PYTHON_INTERPRETER) code/features.py
-
 ## Train and save models
-train: features
+train: data
 	$(PYTHON_INTERPRETER) code/train.py
 
 ## Predict with all built models

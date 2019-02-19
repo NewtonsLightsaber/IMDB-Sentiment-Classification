@@ -6,8 +6,6 @@ from sklearn.preprocessing import Normalizer
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from make_dataset import project_dir, interim_path
 
-processed_path = project_dir / 'data/processed'
-
 def main():
     logger = logging.getLogger(__name__)
     logger.info('Constructing features from data')
@@ -21,12 +19,6 @@ def build_features():
         'y_train.json',
     )
     X_train, X_test, y_train = get_train_test_data(interim_path, filenames)
-
-    count_vect = CountVectorizer().fit(X_train)
-    X_train_counts = count_vect.transform(X_train)
-    X_test_counts = count_vect.transform(X_test)
-
-    print(count_vect)
 
 def get_train_test_data(input_path, filenames):
     train_test_data = [
