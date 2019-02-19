@@ -5,8 +5,8 @@ from pathlib import Path
 from zipfile import ZipFile
 
 project_dir = Path(__file__).resolve().parents[1]
-raw_path = project_dir / 'data' / 'raw'
-interim_path = project_dir / 'data' / 'interim'
+raw_path = project_dir / 'data/raw'
+processed_path = project_dir / 'data/processed'
 
 NEGATIVE, POSITIVE = 0, 1
 
@@ -17,7 +17,7 @@ def main():
     """
     logger = logging.getLogger(__name__)
     logger.info('making final datasets from raw data')
-    preprocess(raw_path, interim_path) # Group all data into json datasets
+    preprocess(raw_path, processed_path) # Group all data into json datasets
 
 def preprocess(input_path, output_path):
     files = [ 'train.zip', 'test.zip' ]
@@ -32,6 +32,14 @@ def preprocess(input_path, output_path):
                 for name in f.namelist()
                 if '.txt' in name and 'MACOSX' not in name # Ignore 'MACOSX' directory
             )
+
+            # Manually rearranging test data in order for Kaggle submission
+            if set_name == 'test':
+                txtfiles = sorted(txtfiles,
+                    key = lambda filename : int(filename
+                        .split('/')[-1]
+                            .split('.')[0]))
+
             for txtfile in txtfiles:
                 text = f.read(txtfile).decode('utf-8')
                 X.append(text)

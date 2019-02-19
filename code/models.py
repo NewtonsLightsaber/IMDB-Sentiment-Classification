@@ -1,25 +1,34 @@
 # -*- coding: utf-8 -*-
 import numpy as np
+from scipy.sparse import csr_matrix, hstack
+from sklearn.preprocessing import binarize
 from make_dataset import NEGATIVE, POSITIVE
 
-class Classifier:
-    def acc(self, X, y):
-        """
-        Compute accuracy of prediction
-        """
-        pass
-
-class BernoulliNaiveBayes(Classifier):
+class BernoulliNaiveBayes:
     """
     Bernoulli Naive Bayes classifier with 2 classes.
     """
-    def __init__(self, k=1):
+    def __init__(self, binarize=.0, k=1):
         """
-        Set k value for Laplacian Smoothing
+        Set:
+            k value for Laplacian Smoothing
+            binarize threshold: values > threshold = 1 else 0
         """
+        self.binarize = binarize
         self.k = k
 
     def fit(self, X, y):
+        """
+        Input:
+            X: n*m csr_matrix
+            y: list of length n
+        """
+        k = self.k
+        n, m = X.shape[0], X.shape[1]
+        X = binarize(X, threshold=self.binarize)
+        num_y_0 = y.count(0)
+        num_y_1 = n - num_y_0
+
         """
         Define
             theta_1 = (# of examples where y=1) / (total # of examples)
@@ -29,52 +38,50 @@ class BernoulliNaiveBayes(Classifier):
             self.theta_x_1[j] = theta_j_1
             self.theta_x_0[j] = theta_j_0
         """
-        n = X.shape[0]
-        m = X.shape[1]
-        X, y = X.tolist(), flatten(y.tolist())
-        num_y_0 = y.count([0])
-        num_y_1 = n - num_y_0
-
         self.theta_1 = num_y_1 / n
-        self.theta_x_0 = [
-            (len([None for i in range(n) if X[i][j] == 1 and y[i] == NEGATIVE]) + k) \
-            / (num_y_0 + k + 1)
-            for j in range(m)
-        ]
-        self.theta_x_1 = [
-            (len([None for i in range(n) if X[i][j] == y[i] == POSITIVE]) + k) \
-            / (num_y_1 + k + 1)
-            for j in range(m)
-        ]
+        self.theta_x_0 = csr_matrix(np.full([1,m], k), dtype=np.float64)
+        self.theta_x_1 = csr_matrix(np.full([1,m], k), dtype=np.float64)
+
+        for i in range(n):
+            if y[i] == NEGATIVE:
+                self.theta_x_0 += X[i]
+
+            else: # y[i] == POSITIVE
+                self.theta_x_1 += X[i]
+
+        self.theta_x_0 /= float(num_y_0 + k + 1)
+        self.theta_x_1 /= float(num_y_1 + k + 1)
 
         return self
 
     def predict(self, X):
-        m = X.shape[1]
-        X = X.tolist()
-        predictions = []
+        """
+        Closed form solution for probability.
+        Between probabilites of review being persitive versus negative,
+        choose the outcome with higher probability.
+        """
+        n, m = X.shape[0], X.shape[1]
+        X = binarize(X, threshold=self.binarize)
+        y_pred = csr_matrix(np.zeros([1,n]))
 
-        for x in X:
-            prob_y_1 = np.prod(
-                  [self.theta_1]
-                + [self.theta_x_1[j]
-                    if x[j] == 1 else 1 - self.theta_x_1[j]
-                        for j in range(m)]
-            )
-            prob_y_0 = np.prod(
-                  [1 - self.theta_1]
-                + [self.theta_x_0[j]
-                    if x[j] == 1 else 1 - self.theta_x_0[j]
-                        for j in range(m)]
-            )
-            prediction = POSITIVE if prob_y_1 > prob_y_0 else NEGATIVE
-            predictions.append([prediction])
+        for i in range(n):
+            prob_pos = self.theta_1
+            prob_neg = 1 - self.theta_1
 
-        predictions = np.array(predictions)
-        return predictions
+            for j in range(m):
+                if X[i,j] == 1:
+                    prob_pos *= self.theta_x_1[0,j]
+                    prob_neg *= self.theta_x_0[0,j]
 
+                else: # X[i,j] == 0
+                    prob_pos *= 1 - self.theta_x_1[0,j]
+                    prob_neg *= 1 - self.theta_x_0[0,j]
 
-""" Helper functions """
+            if prob_pos > prob_neg:
+                y_pred[0,i] = POSITIVE
+
+        return y_pred
+
 
 def flatten(lst):
     """
