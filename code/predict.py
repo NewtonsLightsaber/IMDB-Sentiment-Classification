@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import logging
 import pickle
 import numpy as np
 import pandas as pd
@@ -24,7 +25,6 @@ def main():
         'SupportVectorMachine.pkl'
     )
     models = get_models(models_path, model_names)
-
     predict_train(models, X_train, y_pred)
     predict_test(models, [name.split('.')[0] for name in model_names], X_test)
 

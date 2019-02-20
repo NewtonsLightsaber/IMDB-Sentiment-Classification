@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import logging
 import json
 import pickle
 import numpy as np
@@ -27,15 +28,22 @@ def main():
     )
     X_train, X_test, y_train = get_train_test_data(interim_path, filenames)
 
-    bnb, lr, svm = train_models(X_train, y_train)
+    #bnb, lr, svm = train_models(X_train, y_train)
+    svm = train_svm(X_train, y_train)
     logger.info(('initial training completed, '
                  'now performing cross validation'))
 
     model_params_pairs = (
         (svm, {
             "vect__ngram_range": [(1,1),(1,2),(1,3),(1,4)],
-            "clf__kernel": ['linear', 'sigmoid'],
-            "clf__gamma": ['auto', 'scale']
+            "clf__kernel": [
+                'linear',
+                #'sigmoid',
+            ],
+            "clf__gamma": [
+                #'auto',
+                'scale',
+            ]
         }),
     )
     svm = grid_search(model_params_pairs)
@@ -43,8 +51,8 @@ def main():
                  'now saving models'))
 
     model_name_pairs = (
-        (bnb, 'BernoulliNaiveBayes.pkl'),
-        (lr, 'LogisticRegression.pkl'),
+        #(bnb, 'BernoulliNaiveBayes.pkl'),
+        #(lr, 'LogisticRegression.pkl'),
         (svm, 'SupportVectorMachine.pkl'),
     )
     save_models(model_name_pairs, models_path)
