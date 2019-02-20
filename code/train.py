@@ -26,7 +26,7 @@ def main():
         'X_test.json',
         'y_train.json',
     )
-    X_train, X_test, y_train = get_train_test_data(interim_path, filenames)
+    X_train, X_test, y_train = get_train_test_data(processed_path, filenames)
 
     #bnb, lr, svm = train_models(X_train, y_train)
     svm = train_svm(X_train, y_train)
