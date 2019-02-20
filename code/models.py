@@ -62,7 +62,7 @@ class BernoulliNaiveBayes:
         """
         n, m = X.shape[0], X.shape[1]
         X = binarize(X, threshold=self.binarize)
-        y_pred = csr_matrix(np.zeros([1,n]))
+        y_pred = np.zeros(n)
 
         for i in range(n):
             prob_pos = self.theta_1
@@ -78,7 +78,7 @@ class BernoulliNaiveBayes:
                     prob_neg *= 1 - self.theta_x_0[0,j]
 
             if prob_pos > prob_neg:
-                y_pred[0,i] = POSITIVE
+                y_pred[i] = POSITIVE
 
         return y_pred
 

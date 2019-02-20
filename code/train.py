@@ -7,6 +7,7 @@ from pathlib import Path
 from sklearn.pipeline import Pipeline
 from sklearn.svm import SVC
 from sklearn.linear_model import LogisticRegression as LR
+from sklearn.model_selection import GridSearchCV
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from make_dataset import project_dir, processed_path
 from models import BernoulliNaiveBayes as BNB
@@ -27,12 +28,38 @@ def main():
     X_train, X_test, y_train = get_train_test_data(interim_path, filenames)
 
     bnb, lr, svm = train_models(X_train, y_train)
+
+    model_params_pairs = (
+        (svm, {
+            "vect__ngram_range": [(1,1),(1,2),(1,3),(1,4)],
+            "clf__kernel": ['linear', 'sigmoid'],
+            "clf__gamma": ['auto', 'scale']
+        }),
+    )
+    svm = grid_search(model_params_pairs)
+
     model_name_pairs = (
         (bnb, 'BernoulliNaiveBayes.pkl'),
         (lr, 'LogisticRegression.pkl'),
         (bnb, 'SupportVectorMachine.pkl'),
     )
     save_models(model_name_pairs, models_dir)
+
+def grid_search(model_params_pairs, cv=2, verbose=10, return_train_score=True):
+    grid_searches = []
+
+    for model in models:
+        grid_search = GridSearchCV(
+            model,
+            param_grid=params,
+            cv=cv,
+            verbose=verbose,
+            return_train_score=return_train_score,
+        )
+        grid_search.fit(X_train, y_train)
+        grid_searches.append(grid_search)
+
+    return grid_searches if len(grid_searches) > 1 else grid_searches[0]
 
 def save_models(model_name_pairs, output_path):
     for model, name in model_name_pairs:
@@ -68,9 +95,7 @@ def train_svm(X_train, y_train):
         ('vect', CountVectorizer()),
         ('tfidf', TfidfTransformer()),
         ('norm', Normalizer()),
-        #('clf', SVC(kernel='rbf', gamma='auto')),
-        #('clf', SVC(kernel='poly')),
-        ('clf', SVC(kernel='linear')),
+        ('clf', SVC(cache_size=7000)),
     ])
     pclf.fit(X_train, y_train)
     return pclf
@@ -88,5 +113,5 @@ def get_dataset(path):
 if __name__ == '__main__':
     log_fmt = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     logging.basicConfig(level=logging.INFO, format=log_fmt)
-    
+
     main()
