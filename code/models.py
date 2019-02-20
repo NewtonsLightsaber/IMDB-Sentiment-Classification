@@ -62,29 +62,27 @@ class BernoulliNaiveBayes:
         """
         n, m = X.shape[0], X.shape[1]
         X = binarize(X, threshold=self.binarize)
-        y_pred = np.zeros(n)
+        y_pred = np.full(n, POSITIVE)
+        theta_1 = self.theta_1
+        theta_x_0 = self.theta_x_0.toarray()
+        theta_x_1 = self.theta_x_1.toarray()
+
+        prob_pos = theta_1 * np.prod(theta_x_1)
+        prob_neg = (1 - theta_1) * np.prod(theta_x_0)
+
+        x_prev = csr_matrix(np.full(m,1))
 
         for i in range(n):
-            prob_pos = self.theta_1
-            prob_neg = 1 - self.theta_1
+            x = X[i]
+            temp_prob_pos = prob_pos
+            temp_prob_neg = prob_neg
 
             for j in range(m):
-                if X[i,j] == 1:
-                    prob_pos *= self.theta_x_1[0,j]
-                    prob_neg *= self.theta_x_0[0,j]
+                if X[i,j] == 0:
+                    temp_prob_pos = temp_prob_pos / theta_x_1[0,j] * (1 - theta_x_1[0,j])
+                    temp_prob_neg = temp_prob_neg / theta_x_0[0,j] * (1 - theta_x_0[0,j])
 
-                else: # X[i,j] == 0
-                    prob_pos *= 1 - self.theta_x_1[0,j]
-                    prob_neg *= 1 - self.theta_x_0[0,j]
-
-            if prob_pos > prob_neg:
-                y_pred[i] = POSITIVE
+            if temp_prob_pos < temp_prob_neg:
+                y_pred[i] = NEGATIVE
 
         return y_pred
-
-
-def flatten(lst):
-    """
-    Flatten a list of lists
-    """
-    return [el for sublist in lst for el in sublist]
