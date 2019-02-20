@@ -2,7 +2,6 @@
 import json
 import pickle
 import numpy as np
-import nltk
 from pathlib import Path
 from sklearn.pipeline import Pipeline
 from sklearn.svm import SVC
@@ -12,7 +11,8 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from make_dataset import project_dir, processed_path
 from models import BernoulliNaiveBayes as BNB
 
-models_dir = project_dir / 'models'
+models_path = project_dir / 'models'
+num_bnb_features = 1000
 
 def main():
     logger = logging.getLogger(__name__)
@@ -28,6 +28,8 @@ def main():
     X_train, X_test, y_train = get_train_test_data(interim_path, filenames)
 
     bnb, lr, svm = train_models(X_train, y_train)
+    logger.info(('initial training completed, '
+                 'now performing cross validation'))
 
     model_params_pairs = (
         (svm, {
@@ -37,13 +39,16 @@ def main():
         }),
     )
     svm = grid_search(model_params_pairs)
+    logger.info(('cross validation completed, '
+                 'now saving models'))
 
     model_name_pairs = (
         (bnb, 'BernoulliNaiveBayes.pkl'),
         (lr, 'LogisticRegression.pkl'),
-        (bnb, 'SupportVectorMachine.pkl'),
+        (svm, 'SupportVectorMachine.pkl'),
     )
-    save_models(model_name_pairs, models_dir)
+    save_models(model_name_pairs, models_path)
+    logger.info('models saved to {0}'.format(models_path))
 
 def grid_search(model_params_pairs, cv=2, verbose=10, return_train_score=True):
     grid_searches = []
@@ -77,7 +82,7 @@ def train_bnb(X_train, y_train):
     X_train_counts = count_vect.transform(X_train)
     X_test_counts = count_vect.transform(X_test)
 
-    bnb = BNB().fit(X_train_counts, y_train)
+    bnb = BNB().fit(X_train_counts[:num_bnb_features], y_train)
     return bnb
 
 def train_lr(X_train, y_train):

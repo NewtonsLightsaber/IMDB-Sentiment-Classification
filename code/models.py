@@ -12,7 +12,7 @@ class BernoulliNaiveBayes:
         """
         Set:
             k value for Laplacian Smoothing
-            binarize threshold: values > threshold = 1 else 0
+            binarize threshold: values = 1 if values > threshold else 0
         """
         self.binarize = binarize
         self.k = k
