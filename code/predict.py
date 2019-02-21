@@ -33,7 +33,7 @@ def main():
     model_names = [
         #'BernoulliNaiveBayes.pkl',
         'LogisticRegression.pkl',
-        #'SupportVectorMachine.pkl'
+        'SupportVectorMachine.pkl'
     ]
     models = get_models(models_path, model_names)
 
