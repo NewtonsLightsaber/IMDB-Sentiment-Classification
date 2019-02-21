@@ -2,7 +2,7 @@
 import numpy as np
 from scipy.sparse import csr_matrix, hstack
 from sklearn.preprocessing import binarize
-from make_dataset import NEGATIVE, POSITIVE
+from data import NEGATIVE, POSITIVE
 
 class BernoulliNaiveBayes:
     """

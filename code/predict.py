@@ -9,7 +9,7 @@ from sklearn import metrics
 from sklearn.svm import SVC
 from sklearn.linear_model import LogisticRegression as LR
 from sklearn.model_selection import GridSearchCV
-from make_dataset import project_dir, processed_path
+from data import project_dir, processed_path
 from train import (
     models_path,
     num_bnb_features,

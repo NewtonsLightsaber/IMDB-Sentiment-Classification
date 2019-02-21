@@ -10,7 +10,7 @@ from sklearn.linear_model import LogisticRegression as LR
 from sklearn.model_selection import GridSearchCV
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.preprocessing import Normalizer
-from make_dataset import project_dir, processed_path
+from data import project_dir, processed_path
 from models import BernoulliNaiveBayes as BNB
 
 models_path = project_dir / 'models'

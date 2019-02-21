@@ -1,6 +1,7 @@
 # IMDB Sentiment Analysis
 
-*Part of Project 2 of COMP 551 Applied Machine Learning - McGill University*
+*Part of Project 2 of COMP 551 Applied Machine Learning - McGill University*  
+*Members: Le Nhat Hung, Han Wen Xie, Michel Abdelnour*
 
 ## Prerequisites
 
@@ -19,3 +20,30 @@
     --port=8888 \
     --NotebookApp.port_retries=0
     ```
+
+## Usage
+
+A Makefile with commands is included to make running scripts easier.  
+**Make sure the project's structure is kept as follow:**
+
+    ├── Makefile           <- Makefile with commands like `make data` or `make train`
+    ├── README.md          
+    ├── data
+    │   └── raw            <- The original, immutable data dump.
+    │
+    ├── notebooks          <- Jupyter notebooks.
+    │
+    ├── requirements.txt   <- The requirements file for reproducing the analysis environment,
+    │                         generated with `pip freeze > requirements.txt`
+    │
+    └── code                <- Source code for use in this project.
+        ├── __init__.py    <- Makes code a Python module
+        ├── data.py           <- Scripts to preprocess raw data
+        ├── models.py       <- Code for models (Bernoulli Naive Bayes)
+        ├── train.py       <- Train models
+        └── predict.py         <-
+
+1. Install required packages: `make requirements`
+2. Build datasets: `make data`
+3. Train models: `make train`
+4. Make predictions: `make predict`
