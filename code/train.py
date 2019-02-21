@@ -10,7 +10,7 @@ from sklearn.linear_model import LogisticRegression as LR
 from sklearn.model_selection import GridSearchCV
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.preprocessing import Normalizer
-from make_dataset import project_dir, processed_path
+from data import project_dir, processed_path
 from models import BernoulliNaiveBayes as BNB
 
 models_path = project_dir / 'models'
@@ -29,8 +29,7 @@ def main():
     )
     X_train, X_test, y_train = get_train_test_data(processed_path, filenames)
 
-    #bnb, lr, svm = train_models(X_train, y_train)
-    lr = train_lr(X_train, y_train)
+    bnb, lr, svm = train_models(X_train, y_train)
     logger.info(('initial training completed, '
                  'now performing cross validation'))
 
@@ -47,17 +46,16 @@ def main():
 
     model_params_pairs = [
         (lr, lr_params),
-        #(svm, svm_params),
+        (svm, svm_params),
     ]
-    #svm = grid_search(model_params_pairs, X_train, y_train)
-    lr = grid_search(model_params_pairs, X_train, y_train)
+    lr, svm = grid_search(model_params_pairs, X_train, y_train)
     logger.info(('cross validation completed, '
                  'now saving models'))
 
     model_name_pairs = (
-        #(bnb, 'BernoulliNaiveBayes.pkl'),
+        (bnb, 'BernoulliNaiveBayes.pkl'),
         (lr, 'LogisticRegression.pkl'),
-        #(svm, 'SupportVectorMachine.pkl'),
+        (svm, 'SupportVectorMachine.pkl'),
     )
     save_models(model_name_pairs, models_path)
     logger.info('models saved to {0}'.format(models_path))
