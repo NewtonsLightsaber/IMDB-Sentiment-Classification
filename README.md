@@ -21,6 +21,10 @@
     --NotebookApp.port_retries=0
     ```
 
+## Project Tasks
+
+The timeline of project tasks, experimentation and testing are outlined in our [Colab](https://colab.research.google.com/drive/1oT0mCFWeHc8mHC20V8X12tX_NeNgF3_4).
+
 ## Usage
 
 A Makefile with commands is included to make running scripts easier.  
