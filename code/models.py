@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 import numpy as np
-from scipy.sparse import csr_matrix, hstack
-from sklearn.preprocessing import binarize
+from scipy.sparse import csr_matrix
+from sklearn.preprocessing import binarize as bin
 from data import NEGATIVE, POSITIVE
 
-class BernoulliNaiveBayes:
+class BernoulliNaiveBayes(BaseEstimator, ClassifierMixin):
     """
     Bernoulli Naive Bayes classifier with 2 classes.
     """
@@ -20,14 +20,15 @@ class BernoulliNaiveBayes:
     def fit(self, X, y):
         """
         Input:
-            X: n*m csr_matrix
+            X: n*m csr_matrix (sparse matrix)
             y: list of length n
         """
         k = self.k
-        n, m = X.shape[0], X.shape[1]
-        X = binarize(X, threshold=self.binarize)
-        num_y_0 = y.count(0)
-        num_y_1 = n - num_y_0
+        n, m = X.shape
+        X = bin(X, threshold=self.binarize)
+        num_y_1 = np.sum(y)
+        num_y_0 = n - num_y_1
+
 
         """
         Define
@@ -38,51 +39,43 @@ class BernoulliNaiveBayes:
             self.theta_x_1[j] = theta_j_1
             self.theta_x_0[j] = theta_j_0
         """
-        self.theta_1 = num_y_1 / n
-        self.theta_x_0 = csr_matrix(np.full([1,m], k), dtype=np.float64)
-        self.theta_x_1 = csr_matrix(np.full([1,m], k), dtype=np.float64)
+        theta_1 = num_y_1 / n
+        theta_x_0 = np.full(m, k)
+        theta_x_1 = np.full(m, k)
 
         for i in range(n):
             if y[i] == NEGATIVE:
-                self.theta_x_0 += X[i]
+                theta_x_0 += X[i]
 
             else: # y[i] == POSITIVE
-                self.theta_x_1 += X[i]
+                theta_x_1 += X[i]
 
-        self.theta_x_0 /= float(num_y_0 + k + 1)
-        self.theta_x_1 /= float(num_y_1 + k + 1)
+        theta_x_0 = theta_x_0 / (num_y_0 + k + 1)
+        theta_x_1 = theta_x_1 / (num_y_1 + k + 1)
+
+        ones = np.full(m,1)
+
+        w_x_0 = np.log(ones - theta_x_1) - np.log(ones - theta_x_0)
+        w_x_1 = np.log(theta_x_1) - np.log(theta_x_0)
+
+        self.w_0 = np.log(theta_1/(1 - theta_1)) + np.sum(w_x_0)
+        self.w = w_x_1 - w_x_0
 
         return self
 
     def predict(self, X):
         """
-        Closed form solution for probability.
-        Between probabilites of review being persitive versus negative,
-        choose the outcome with higher probability.
+        Closed form solution for decision boundary.
         """
-        n, m = X.shape[0], X.shape[1]
-        X = binarize(X, threshold=self.binarize)
-        y_pred = np.full(n, POSITIVE)
-        theta_1 = self.theta_1
-        theta_x_0 = self.theta_x_0.toarray()
-        theta_x_1 = self.theta_x_1.toarray()
+        n = X.shape[0]
+        X = bin(X, threshold=self.binarize)
+        w_0 = self.w_0
+        w = self.w
+        y_pred = np.full(n, w_0)
 
-        prob_pos = theta_1 * np.prod(theta_x_1)
-        prob_neg = (1 - theta_1) * np.prod(theta_x_0)
+        for i, x in enumerate(X):
+            y_pred[i] += x.dot(w.T)
 
-        x_prev = csr_matrix(np.full(m,1))
-
-        for i in range(n):
-            x = X[i]
-            temp_prob_pos = prob_pos
-            temp_prob_neg = prob_neg
-
-            for j in range(m):
-                if X[i,j] == 0:
-                    temp_prob_pos = temp_prob_pos / theta_x_1[0,j] * (1 - theta_x_1[0,j])
-                    temp_prob_neg = temp_prob_neg / theta_x_0[0,j] * (1 - theta_x_0[0,j])
-
-            if temp_prob_pos < temp_prob_neg:
-                y_pred[i] = NEGATIVE
+        y_pred = (y_pred >= 0).astype(int).tolist()
 
         return y_pred
