@@ -31,7 +31,7 @@ def main():
     X_train, X_test, y_train = get_train_test_data(processed_path, data_names)
 
     model_names = [
-        #'BernoulliNaiveBayes.pkl',
+        'BernoulliNaiveBayes.pkl',
         'LogisticRegression.pkl',
         'SupportVectorMachine.pkl'
     ]
