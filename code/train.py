@@ -33,6 +33,9 @@ def main():
     logger.info(('initial training completed, '
                  'now performing cross validation'))
 
+    bnb_params = {
+        "vect__ngram_range": [(1,1), (1,2), (2,2)],
+    }
     lr_params = {
         "vect__ngram_range": [(1,4),(1,5),(1,6),(1,7),(1,8),(1,9),(1,10)],
         "tfidf__use_idf": [True],
@@ -43,12 +46,12 @@ def main():
         "clf__kernel": ['linear'],
         "clf__gamma": ['auto','scale']
     }
-
     model_params_pairs = [
+        (bnb, bnb_params),
         (lr, lr_params),
         (svm, svm_params),
     ]
-    lr, svm = grid_search(model_params_pairs, X_train, y_train)
+    bnb, lr, svm = grid_search(model_params_pairs, X_train, y_train)
     logger.info(('cross validation completed, '
                  'now saving models'))
 
@@ -91,11 +94,14 @@ def train_models(X_train, y_train):
     return bnb, lr, svm
 
 def train_bnb(X_train, y_train):
-    count_vect = CountVectorizer().fit(X_train)
-    X_train_counts = count_vect.transform(X_train)
-
-    bnb = BNB().fit(X_train_counts[:num_bnb_features], y_train)
-    return bnb
+    pclf = Pipeline([
+        ('vect', CountVectorizer()),
+        ('tfidf', TfidfTransformer()),
+        ('norm', Normalizer()),
+        ('clf', BNB()),
+    ])
+    pclf.fit(X_train, y_train)
+    return pclf
 
 def train_lr(X_train, y_train):
     pclf = Pipeline([
